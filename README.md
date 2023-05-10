@@ -36,7 +36,7 @@
 - 구별 난이도별로
 - easy: 3장 mid: 480장hard: 227장
 - 사진은 전부 정면, 회전 없음
-- 데이터는 전부 확인은 하지 않았지만 가로 600px,세로 600px
+- 데이터는 전부 가로 600px,세로 600px
 ``` python
 import os
 from PIL import Image
@@ -57,6 +57,7 @@ for root, dirs, files in os.walk(folder_path):
 if all_images_600x600:
     print("All images are 600x600")
 ```
+
 
 
 
