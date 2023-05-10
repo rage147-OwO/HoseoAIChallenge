@@ -37,6 +37,26 @@
 - easy: 3장 mid: 480장hard: 227장
 - 데이터는 전부 확인은 하지 않았지만 가로 600px,세로 600px
 - 사진은 전부 정면, 회전 없음
+``` python
+import os
+from PIL import Image
+
+folder_path = '/content/drive/MyDrive/hoseoAIDataSet'
+all_images_600x600 = True
+
+for root, dirs, files in os.walk(folder_path):
+    for file in files:
+        if file.endswith('.jpg') or file.endswith('.png'):
+            img_path = os.path.join(root, file)
+            with Image.open(img_path) as img:
+                width, height = img.size
+                if width != 600 or height != 600:
+                    all_images_600x600 = False
+                    print(f"Image {img_path} size is not 600x600: ({width}, {height})")
+
+if all_images_600x600:
+    print("All images are 600x600")
+```
 
 
 
