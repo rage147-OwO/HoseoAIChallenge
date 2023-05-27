@@ -1,59 +1,3 @@
-# HoseoAIChallenge
-## 2023 HOSEO AI 프로그래밍 대회
-### 대회소개
-2023 HOSEO AI 프로그래밍 경진대회에 참여하신 것을 환영합니다.
-이번 대회를 통해 여러분의 창의적인 소프트웨어 개발활동을 도모하며 인재를 발굴하고 SW역량을 향상시키고자 합니다.
-제공되는 데이터셋을 가지고 전처리를 진행하고, 학습 모델을 개발하여 탐지율을 확인하고 효과적인 전처리 및 모델 개발에 대한 발표 평가를 가지게 됩니다.
-개발 언어는 C, C++, Java, Python 등 어떤 언어를 사용하셔도 좋으며, 프로그래밍 환경에 대한 제약사항은 없습니다.
-단, 부정행위(Data Leakage 등)가 의심될 경우 0점 처리되오며 이 점을 참고해주시기 바랍니다.😊
-요구하는 제출자료의 양식에 맞게 작성하여 제출해주시면 됩니다.
-우수한 결과를 도출하는 학생에게는 데이터인재양성 프로그램에 참여할 수 있는 가산점이 주어집니다.
-좋은 결과가 있으시길 바라며, 많은 참여 부탁드립니다.
-### 대회소개
- - 호서대학교 학부생 전체
-### 대회일정
-- 본교 대학원생 및 학.석사연계과정생 참여 불가
-### 신청일정
-신청자 접수 및 데이터셋 제공 2023. 5. 2.(화) ~ 2023. 5. 25 (목)
-결과 제출물 수시 접수 2023. 5. 2.(화) ~ 2023. 5. 25 (목)
-발표 평가 2023. 5. 26 (금)
-심사결과 발표 및 수상 대상자 선정 2023. 5. 26 (금)
-### 평가기준
- - 발표평가 70% + 탐지율(성능) 30%
-### 상금
-1등 (1팀)
-30만원
-2등 (2팀)
-각 20만원
-3등 (3팀)
-각 10만원
-## 과정 및 과제
-### 데이터셋 분석
-- 데이터 세트에는 전문가가 생성한 고품질 포토샵 얼굴 이미지가 포함되어 있습니다.
-- 이미지는 눈, 코, 입 또는 전체 얼굴로 구분된 서로 다른 얼굴의 합성입니다.
-- 실제 사람 이미지인 real: 828장 
-- 합성된 사람 이미지 fake: 710장
-- 구별 난이도별로
-- easy: 3장 mid: 480장hard: 227장
-- 사진은 전부 정면, 회전 없음
-- 데이터는 전부 가로 600px,세로 600px
-### 목표 모델 Case
-1. ResNet: VGG16에 비해 파라미터가 적으므로 많은 레이어를 사용가능, 레이어별 모델 비교
-2. VGG16: 
-	1. VGG16 Real/Fake :  VGG16모델을 이용하여 real/fake 이미지를 구분하는 이진 분류 모델
-	2. VGG16 Easy 데이터 증강 후 학습:
-	3. VGG16 Easy 데이터가중치 부여 후 학습
-
-
-
-
-
-1. 데이터셋을 0.15비율로 나눠 학습, 테스트셋을 나누기
-2. 학습셋의 이미지를 좌우 flip시켜 데이터 증강
-
-
-
-```
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -62,22 +6,20 @@ from torchvision.datasets import ImageFolder
 from torch.utils.data import DataLoader
 
 # 하이퍼파라미터 설정
-batch_size = 64
+batch_size = 32
 num_epochs = 100
 learning_rate = 0.001
 
 # 데이터 경로 설정
-train_data_path = r"/content/drive/MyDrive/dataset/train"
-test_data_path = r"/content/drive/MyDrive/dataset/test"
+train_data_path = r"C:\Users\User\Documents\GitHub\HoseoAIChallenge\dataset\train"
+test_data_path = r"C:\Users\User\Documents\GitHub\HoseoAIChallenge\dataset\test"
 
 # 모델 가중치 저장 경로
-weight_save_path = r"/content/drive/MyDrive/dataset/"
+weight_save_path = r"C:\Users\User\Documents\GitHub\HoseoAIChallenge\first"
 
 # 데이터 전처리 및 변환
 transform = transforms.Compose([
     transforms.Resize((600, 600)),  # 이미지 크기 조정
-    transforms.RandomHorizontalFlip(),  # 가로 뒤집기
-    transforms.RandomRotation(10),  # 랜덤한 각도로 회전
     transforms.ToTensor(),  # 이미지를 텐서로 변환
     transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])  # 이미지 정규화
 ])
@@ -104,7 +46,6 @@ class Model(nn.Module):
         self.pool2 = nn.MaxPool2d(kernel_size=2, stride=2)
         self.fc1 = nn.Linear(32 * 150 * 150, 64)  # 입력 크기에 맞게 조정
         self.relu3 = nn.ReLU()
-        self.dropout = nn.Dropout(0.5)  # 드롭아웃 추가
         self.fc2 = nn.Linear(64, 2)  # 클래스 개수에 맞게 출력 크기 조정
 
     def forward(self, x):
@@ -117,18 +58,19 @@ class Model(nn.Module):
         x = x.view(x.size(0), -1)
         x = self.fc1(x)
         x = self.relu3(x)
-        x = self.dropout(x)  # 드롭아웃 적용
         x = self.fc2(x)
         return x
 
-# 신경망 모델 정의
+
+
+
+# 신1경망 모델 정의
 model = Model()  # 모델을 정의해야 함
 model = model.to(device)
 
 # 손실 함수와 옵티마이저 정의
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)  # 학습률 스케줄링
 
 # 학습 및 평가
 for epoch in range(num_epochs):
@@ -178,19 +120,3 @@ for epoch in range(num_epochs):
     
     # 각 epoch마다 모델 가중치 저장
     torch.save(model.state_dict(), f"{weight_save_path}/model_epoch_{epoch+1}.pth")
-    
-    # 학습률 스케줄링 적용
-    scheduler.step()
-
-```
-Case1
-
-
-transform = transforms.Compose([
-    transforms.Resize((600, 600)),  # 이미지 크기 조정
-    transforms.RandomHorizontalFlip(),  # 가로 뒤집기
-    transforms.RandomRotation(10),  # 랜덤한 각도로 회전
-    transforms.ToTensor(),  # 이미지를 텐서로 변환
-    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])  # 이미지 정규화
-])
-
