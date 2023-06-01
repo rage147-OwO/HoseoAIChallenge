@@ -1,0 +1,23 @@
+[
+    {
+      "transform": {
+        "type": "CenterCrop",
+        "size": 400
+      },
+      "model_path": "path_to_model1.pt",
+      "model_type": "resnet18",
+      "f1_score": 0.85,
+      "memo": "Case 0 description"
+    },
+    {
+      "transform": {
+        "type": "RandomCrop",
+        "size": 224
+      },
+      "model_path": "path_to_model2.pt",
+      "model_type": "resnet50",
+      "f1_score": 0.92,
+      "memo": "Case 1 description"
+    }
+  ]
+  
